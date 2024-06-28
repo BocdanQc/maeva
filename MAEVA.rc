@@ -1,0 +1,216 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Anglais (États-Unis) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_MAEVA_DIALOG DIALOGEX 0, 0, 205, 425
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Micro-Asperities EVAluation robot controller   -   ver: 1.2"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Scan Devices",IDC_BUTTON_SCAN,29,15,50,14
+    LISTBOX         IDC_LIST_SUB20DEVICES,106,15,92,55,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Idle Test",IDC_BUTTON_IDLE_TEST,29,77,50,14,WS_DISABLED
+    EDITTEXT        IDC_EDIT_SURFACE_TYPE,106,140,92,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_STYLUS,106,159,92,55,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_RPM,106,178,43,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_RADIUS,106,197,43,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_DATA_RANGE,106,235,43,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Start Data Acquisition",IDC_BUTTON_START_ACQ,53,315,98,14,WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Stop Data Acquisition",IDC_BUTTON_STOP_ACQ,53,332,98,14,WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Export Data",IDC_BUTTON_EXPORT_DATA,53,349,98,14,WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Evaluate Data/Surface Type",IDC_BUTTON_EVAL_DATA,53,366,98,14,NOT WS_VISIBLE | WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Exit",IDOK,77,404,50,14,NOT WS_TABSTOP
+    LTEXT           "Surface to identify:",IDC_STATIC,7,140,63,8
+    LTEXT           "Data range setting:",IDC_STATIC,7,235,80,8
+    LTEXT           "Number of data entries:",IDC_STATIC,7,254,80,8
+    LTEXT           "Elapsed time (seconds):",IDC_STATIC,7,273,80,8
+    LTEXT           "Size",IDC_STATIC_DATA_SIZE,106,254,43,10,SS_SUNKEN
+    LTEXT           "Time",IDC_STATIC_ELAPSED_TIME,106,273,43,10,SS_SUNKEN
+    LTEXT           "Overrun number:",IDC_STATIC,7,292,80,8
+    LTEXT           "Overrun",IDC_STATIC_OVERRUN,106,292,43,10,SS_SUNKEN
+    LTEXT           "Stylus type:",IDC_STATIC,7,159,80,8
+    LTEXT           "Revolution per minute (RPM):",IDC_STATIC,7,178,95,8
+    LTEXT           "Radius (mm):",IDC_STATIC,7,197,80,8
+    LTEXT           "Radial speed (mm/s):",IDC_STATIC,7,216,95,8
+    CONTROL         "Speed",IDC_STATIC_SPEED,"Static",SS_LEFTNOWORDWRAP | SS_SUNKEN | WS_GROUP,106,216,43,10
+    CTEXT           "Devices List",IDC_STATIC,106,7,92,8
+    GROUPBOX        "Average Values",IDC_STATIC,106,73,92,59,BS_CENTER
+    CTEXT           "X",IDC_STATIC_X_AXIS,153,85,43,10,SS_SUNKEN
+    CTEXT           "Y",IDC_STATIC_Y_AXIS,153,100,43,10,SS_SUNKEN
+    CTEXT           "Z",IDC_STATIC_Z_AXIS,153,117,43,10,SS_SUNKEN
+    LTEXT           "X-Axis (mG):",IDC_STATIC,110,85,40,8
+    LTEXT           "Y-Axis (mG):",IDC_STATIC,110,100,40,8
+    LTEXT           "Z-Axis (mG):",IDC_STATIC,110,115,40,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,2,0,0
+ PRODUCTVERSION 1,2,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "Laval University - IFT and GLO Department"
+            VALUE "FileDescription", "Data acquisition through USB-SPI from an accelerometer to be sent to MATLAB."
+            VALUE "FileVersion", "1.2"
+            VALUE "InternalName", "MAEVA.exe"
+            VALUE "LegalCopyright", "(c) Laval University - Daniel Emond.  All rights reserved."
+            VALUE "OriginalFilename", "MAEVA.exe"
+            VALUE "ProductName", "Micro-Asperities EVAluation Robot Controller"
+            VALUE "ProductVersion", "1.2"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_MAEVA_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 198
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 418
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Anglais (États-Unis) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Français (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRC)
+#ifdef _WIN32
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH_CANADIAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\MAEVA.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\MAEVA.ico"
+#endif    // Français (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\MAEVA.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
