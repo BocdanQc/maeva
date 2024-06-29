@@ -29,46 +29,51 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_MAEVA_DIALOG DIALOGEX 0, 0, 205, 425
+IDD_MAEVA_DIALOG DIALOGEX 0, 0, 326, 236
 STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "Micro-Asperities EVAluation robot controller   -   ver: 1.2"
+CAPTION "Micro-Asperities EVAluation robot controller   -   Version: 1.3"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Scan Devices",IDC_BUTTON_SCAN,29,15,50,14
-    LISTBOX         IDC_LIST_SUB20DEVICES,106,15,92,55,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Idle Test",IDC_BUTTON_IDLE_TEST,29,77,50,14,WS_DISABLED
-    EDITTEXT        IDC_EDIT_SURFACE_TYPE,106,140,92,12,ES_AUTOHSCROLL
-    COMBOBOX        IDC_COMBO_STYLUS,106,159,92,55,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    EDITTEXT        IDC_EDIT_RPM,106,178,43,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_RADIUS,106,197,43,12,ES_AUTOHSCROLL
-    COMBOBOX        IDC_COMBO_DATA_RANGE,106,235,43,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Start Data Acquisition",IDC_BUTTON_START_ACQ,53,315,98,14,WS_DISABLED | NOT WS_TABSTOP
-    PUSHBUTTON      "Stop Data Acquisition",IDC_BUTTON_STOP_ACQ,53,332,98,14,WS_DISABLED | NOT WS_TABSTOP
-    PUSHBUTTON      "Export Data",IDC_BUTTON_EXPORT_DATA,53,349,98,14,WS_DISABLED | NOT WS_TABSTOP
-    PUSHBUTTON      "Evaluate Data/Surface Type",IDC_BUTTON_EVAL_DATA,53,366,98,14,NOT WS_VISIBLE | WS_DISABLED | NOT WS_TABSTOP
-    PUSHBUTTON      "Exit",IDOK,77,404,50,14,NOT WS_TABSTOP
-    LTEXT           "Surface to identify:",IDC_STATIC,7,140,63,8
-    LTEXT           "Data range setting:",IDC_STATIC,7,235,80,8
-    LTEXT           "Number of data entries:",IDC_STATIC,7,254,80,8
-    LTEXT           "Elapsed time (seconds):",IDC_STATIC,7,273,80,8
-    LTEXT           "Size",IDC_STATIC_DATA_SIZE,106,254,43,10,SS_SUNKEN
-    LTEXT           "Time",IDC_STATIC_ELAPSED_TIME,106,273,43,10,SS_SUNKEN
-    LTEXT           "Overrun number:",IDC_STATIC,7,292,80,8
-    LTEXT           "Overrun",IDC_STATIC_OVERRUN,106,292,43,10,SS_SUNKEN
-    LTEXT           "Stylus type:",IDC_STATIC,7,159,80,8
-    LTEXT           "Revolution per minute (RPM):",IDC_STATIC,7,178,95,8
-    LTEXT           "Radius (mm):",IDC_STATIC,7,197,80,8
-    LTEXT           "Radial speed (mm/s):",IDC_STATIC,7,216,95,8
-    CONTROL         "Speed",IDC_STATIC_SPEED,"Static",SS_LEFTNOWORDWRAP | SS_SUNKEN | WS_GROUP,106,216,43,10
-    CTEXT           "Devices List",IDC_STATIC,106,7,92,8
-    GROUPBOX        "Average Values",IDC_STATIC,106,73,92,59,BS_CENTER
-    CTEXT           "X",IDC_STATIC_X_AXIS,153,85,43,10,SS_SUNKEN
-    CTEXT           "Y",IDC_STATIC_Y_AXIS,153,100,43,10,SS_SUNKEN
-    CTEXT           "Z",IDC_STATIC_Z_AXIS,153,117,43,10,SS_SUNKEN
-    LTEXT           "X-Axis (mG):",IDC_STATIC,110,85,40,8
-    LTEXT           "Y-Axis (mG):",IDC_STATIC,110,100,40,8
-    LTEXT           "Z-Axis (mG):",IDC_STATIC,110,115,40,8
+    DEFPUSHBUTTON   "Scan Devices",IDC_BUTTON_SCAN,21,15,50,14
+    LISTBOX         IDC_LIST_SUB20DEVICES,85,15,92,47,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Idle Test",IDC_BUTTON_IDLE_TEST,21,66,50,14,WS_DISABLED
+    EDITTEXT        IDC_EDIT_SURFACE_TYPE,85,125,92,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_STYLUS,85,141,92,55,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_RPM,85,157,43,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_RADIUS,85,173,43,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_DATA_RANGE,276,141,43,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Start Data Acquisition",IDC_BUTTON_START_ACQ,199,15,98,14,WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Stop Data Acquisition",IDC_BUTTON_STOP_ACQ,199,32,98,14,WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Save Acquired Data",IDC_BUTTON_SAVE_DATA,199,66,98,14,WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Evaluate Data/Surface",IDC_BUTTON_EVAL_DATA,199,100,98,14,NOT WS_VISIBLE | WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Exit",IDOK,137,215,50,14,NOT WS_TABSTOP
+    LTEXT           "Surface to identify:",IDC_STATIC,7,125,74,8
+    LTEXT           "Data range setting:",IDC_STATIC,192,141,80,8
+    LTEXT           "Number of data entries:",IDC_STATIC,192,157,80,8
+    LTEXT           "Elapsed time (seconds):",IDC_STATIC,192,173,80,8
+    LTEXT           "Size",IDC_STATIC_DATA_SIZE,276,157,43,10,SS_SUNKEN
+    LTEXT           "Time",IDC_STATIC_ELAPSED_TIME,276,173,43,10,SS_SUNKEN
+    LTEXT           "Overrun number:",IDC_STATIC,192,189,80,8
+    LTEXT           "Overrun",IDC_STATIC_OVERRUN,276,189,43,10,SS_SUNKEN
+    LTEXT           "Stylus type:",IDC_STATIC,7,141,74,8
+    LTEXT           "Revolution per minute:",IDC_STATIC,7,157,74,8
+    LTEXT           "Radius (mm):",IDC_STATIC,7,173,74,8
+    LTEXT           "Radial speed (mm/s):",IDC_STATIC,7,189,74,8
+    CONTROL         "Speed",IDC_STATIC_SPEED,"Static",SS_LEFTNOWORDWRAP | SS_SUNKEN | WS_GROUP,85,189,43,12
+    CTEXT           "Devices List",IDC_STATIC,85,7,92,8
+    GROUPBOX        "Average Values",IDC_STATIC,85,62,92,59,BS_CENTER
+    CTEXT           "X",IDC_STATIC_X_AXIS,131,74,43,10,SS_SUNKEN
+    CTEXT           "Y",IDC_STATIC_Y_AXIS,131,89,43,10,SS_SUNKEN
+    CTEXT           "Z",IDC_STATIC_Z_AXIS,131,106,43,10,SS_SUNKEN
+    LTEXT           "X-Axis (mG):",IDC_STATIC,88,74,40,8
+    LTEXT           "Y-Axis (mG):",IDC_STATIC,88,89,40,8
+    LTEXT           "Z-Axis (mG):",IDC_STATIC,88,104,40,8
+    LTEXT           "Data capture length:",IDC_STATIC,192,125,80,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,184,125,2,77
+    PUSHBUTTON      "Learn Data/Surface",IDC_BUTTON_LEARN_DATA,199,83,98,14,NOT WS_VISIBLE | WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Show Real-Time Capture",IDC_BUTTON_SHOW_RT_DATA,199,49,98,14,WS_DISABLED | NOT WS_TABSTOP
+    COMBOBOX        IDC_COMBO_CAPTURE_LENGTH,276,125,43,91,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
 END
 
 
@@ -79,7 +84,7 @@ END
 
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION 1,2,0,0
- PRODUCTVERSION 1,2,0,0
+ PRODUCTVERSION 1,3,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -95,13 +100,13 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "Laval University - IFT and GLO Department"
-            VALUE "FileDescription", "Data acquisition through USB-SPI from an accelerometer to be sent to MATLAB."
-            VALUE "FileVersion", "1.2"
+            VALUE "FileDescription", "MAEVA: Data acquisition through USB-SPI from an accelerometer."
+            VALUE "FileVersion", "1.3"
             VALUE "InternalName", "MAEVA.exe"
             VALUE "LegalCopyright", "(c) Laval University - Daniel Emond.  All rights reserved."
             VALUE "OriginalFilename", "MAEVA.exe"
             VALUE "ProductName", "Micro-Asperities EVAluation Robot Controller"
-            VALUE "ProductVersion", "1.2"
+            VALUE "ProductVersion", "1.3"
         END
     END
     BLOCK "VarFileInfo"
@@ -122,9 +127,9 @@ BEGIN
     IDD_MAEVA_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 198
+        RIGHTMARGIN, 319
         TOPMARGIN, 7
-        BOTTOMMARGIN, 418
+        BOTTOMMARGIN, 229
     END
 END
 #endif    // APSTUDIO_INVOKED

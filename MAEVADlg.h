@@ -28,7 +28,21 @@ enum T_STYLUS_TYPE
    E_ALUMINIUM,
    E_PLASTIC,
    E_STEEL,
-   E_WOOD_PINE
+   E_WOOD_PINE,
+   E_MAX_STYLUS_TYPE
+};
+
+enum T_CAPTURE_LENGTH
+{
+   E_INFINITE,
+   E_05_MINS,
+   E_10_MINS,
+   E_15_MINS,
+   E_20_MINS,
+   E_25_MINS,
+   E_30_MINS,
+   E_45_MINS,
+   E_60_MINS
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -67,12 +81,15 @@ public:
    afx_msg void OnCbnSelchangeComboStylusType();
    afx_msg void OnKillFocusEditRPM();
    afx_msg void OnKillFocusEditRadius();
+   afx_msg void OnCbnSelchangeComboCaptureLength();
    afx_msg void OnCbnSelchangeComboDataRange();
-   afx_msg void OnBnClickedButtonIdleTest();
    afx_msg void OnBnClickedButtonScan();
+   afx_msg void OnBnClickedButtonIdleTest();
    afx_msg void OnBnClickedButtonStartAcq();
    afx_msg void OnBnClickedButtonStopAcq();
-   afx_msg void OnBnClickedButtonExportData();
+   afx_msg void OnBnClickedButtonShowRtData();
+   afx_msg void OnBnClickedButtonSaveData();
+   afx_msg void OnBnClickedButtonLearnData();
    afx_msg void OnBnClickedButtonEvalData();
    afx_msg void OnBnClickedButtonExit();
 
@@ -87,18 +104,20 @@ public:
    BOOL       m_bAcquiringData;
 
 private:
-   CString       m_strSurfaceType;
-   T_STYLUS_TYPE m_eStylusType;
-   double        m_fRPM;
-   double        m_fRadius;
-   double        m_fSpeed;
-   T_RANGE_G_SET m_eDataRangeSetting;
-   BOOL          m_bAccelStarted;
-   BOOL          m_bFileAlreadyOpened;
-   int           m_iFileOverrunEndPtr;
-   CTime         m_timeAcqStart;
-   CTime         m_timeAcqStop;
-   LONGLONG      m_uiElapsedTime;
+   CString          m_strSurfaceType;
+   T_STYLUS_TYPE    m_eStylusType;
+   double           m_fRPM;
+   double           m_fRadius;
+   double           m_fSpeed;
+   T_CAPTURE_LENGTH m_eCaptureLength;
+   T_RANGE_G_SET    m_eDataRangeSetting;
+   BOOL             m_bAccelStarted;
+   BOOL             m_bFileAlreadyOpened;
+   int              m_iFileOverrunEndPtr;
+   CTime            m_timeAcqStart;
+   CTime            m_timeAcqStop;
+   LONGLONG         m_uiElapsedTime;
+   LONGLONG         m_uiMaxTime;
 
    CListBox   m_lbSUB20DevicesList;
    CStatic    m_staticXAxis;
@@ -109,6 +128,7 @@ private:
    CEditFloat m_editRPM;
    CEditFloat m_editRadius;
    CStatic    m_staticSpeed;
+   CComboBox  m_cbCaptureLength;
    CComboBox  m_cbDataRangeList;
    CStatic    m_staticDataSize;
    CStatic    m_staticElapsedTime;
@@ -117,6 +137,8 @@ private:
    CButton m_buttonIdleTest;
    CButton m_buttonStartAcq;
    CButton m_buttonStopAcq;
-   CButton m_buttonExportData;
+   CButton m_buttonShowRTData;
+   CButton m_buttonSaveData;
+   CButton m_buttonLearnData;
    CButton m_buttonEvalData;
 };

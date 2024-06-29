@@ -15,6 +15,7 @@
 #define IDC_BUTTON_START_ACQ            1009
 #define IDC_BUTTON_STOP_ACQ             1010
 #define IDC_BUTTON_EXPORT_DATA          1011
+#define IDC_BUTTON_SAVE_DATA            1011
 #define IDC_BUTTON_EVAL_DATA            1012
 #define IDC_COMBO_STYLUS                1013
 #define IDC_EDIT_RPM                    1014
@@ -23,7 +24,9 @@
 #define IDC_STATIC_X_AXIS               1017
 #define IDC_STATIC_Y_AXIS               1018
 #define IDC_STATIC_Z_AXIS               1019
-#define IDC_COMMAND1                    1020
+#define IDC_BUTTON_LEARN_DATA           1020
+#define IDC_BUTTON_SHOW_RT_DATA         1021
+#define IDC_COMBO_CAPTURE_LENGTH        1022
 
 // Next default values for new objects
 // 
@@ -31,7 +34,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        129
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_CONTROL_VALUE         1026
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

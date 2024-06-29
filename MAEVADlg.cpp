@@ -19,10 +19,12 @@
 #define PI 3.1415926535897932384626433832795f
 #define SEC_PER_MIN 60
 
-#define INIT_STYLUS E_STEEL
-#define INIT_RPM    45.0f
-#define INIT_RADIUS 125.0f 
-#define INIT_RANGE  E_RANGE_PLUS_MINUS_4G
+#define INIT_STYLUS         E_STEEL
+#define INIT_RPM            45.0f
+#define INIT_RADIUS         125.0f 
+#define INIT_CAPTURE_LENGTH E_25_MINS
+   //Note: Possible values for INIT_CAPTURE_LENGTH are E_05_MINS to E_30_MINS
+#define INIT_RANGE          E_RANGE_PLUS_MINUS_4G
 
 #ifdef _LOW_RES_DATA
 #define DATA_MASK_2G  E_2G_LO_RES_DATA_MASK
@@ -222,11 +224,13 @@ CMAEVADlg::CMAEVADlg(CWnd* pParent /*=NULL*/)
    , m_eStylusType(INIT_STYLUS)
    , m_fRPM(INIT_RPM)
    , m_fRadius(INIT_RADIUS)
+   , m_eCaptureLength(INIT_CAPTURE_LENGTH)
    , m_eDataRangeSetting(INIT_RANGE)
    , m_bAccelStarted(FALSE)
    , m_bFileAlreadyOpened(FALSE)
    , m_iFileOverrunEndPtr(0)
    , m_uiElapsedTime(0)
+   , m_uiMaxTime(INIT_CAPTURE_LENGTH * 5 * SEC_PER_MIN)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
@@ -245,18 +249,21 @@ void CMAEVADlg::DoDataExchange(CDataExchange* pDX)
    DDX_Control(pDX, IDC_STATIC_Y_AXIS, m_staticYAxis);
    DDX_Control(pDX, IDC_STATIC_Z_AXIS, m_staticZAxis);
    DDX_Control(pDX, IDC_EDIT_SURFACE_TYPE, m_editSurfaceType);
-   DDX_Control(pDX, IDC_COMBO_DATA_RANGE, m_cbDataRangeList);
-   DDX_Control(pDX, IDC_STATIC_DATA_SIZE, m_staticDataSize);
-   DDX_Control(pDX, IDC_STATIC_ELAPSED_TIME, m_staticElapsedTime);
-   DDX_Control(pDX, IDC_STATIC_OVERRUN, m_staticOverrunNb);
    DDX_Control(pDX, IDC_COMBO_STYLUS, m_cbStylusType);
    DDX_Control(pDX, IDC_EDIT_RPM, m_editRPM);
    DDX_Control(pDX, IDC_EDIT_RADIUS, m_editRadius);
    DDX_Control(pDX, IDC_STATIC_SPEED, m_staticSpeed);
+   DDX_Control(pDX, IDC_COMBO_CAPTURE_LENGTH, m_cbCaptureLength);
+   DDX_Control(pDX, IDC_COMBO_DATA_RANGE, m_cbDataRangeList);
+   DDX_Control(pDX, IDC_STATIC_DATA_SIZE, m_staticDataSize);
+   DDX_Control(pDX, IDC_STATIC_ELAPSED_TIME, m_staticElapsedTime);
+   DDX_Control(pDX, IDC_STATIC_OVERRUN, m_staticOverrunNb);
    DDX_Control(pDX, IDC_BUTTON_IDLE_TEST, m_buttonIdleTest);
    DDX_Control(pDX, IDC_BUTTON_START_ACQ, m_buttonStartAcq);
    DDX_Control(pDX, IDC_BUTTON_STOP_ACQ, m_buttonStopAcq);
-   DDX_Control(pDX, IDC_BUTTON_EXPORT_DATA, m_buttonExportData);
+   DDX_Control(pDX, IDC_BUTTON_SHOW_RT_DATA, m_buttonShowRTData);
+   DDX_Control(pDX, IDC_BUTTON_SAVE_DATA, m_buttonSaveData);
+   DDX_Control(pDX, IDC_BUTTON_LEARN_DATA, m_buttonLearnData);
    DDX_Control(pDX, IDC_BUTTON_EVAL_DATA, m_buttonEvalData);
 }
 
@@ -271,16 +278,19 @@ BEGIN_MESSAGE_MAP(CMAEVADlg, CDialog)
    ON_EN_KILLFOCUS(IDC_EDIT_RPM,          &CMAEVADlg::OnKillFocusEditRPM)
    ON_EN_KILLFOCUS(IDC_EDIT_RADIUS,       &CMAEVADlg::OnKillFocusEditRadius)
    ON_CBN_SELCHANGE(IDC_COMBO_DATA_RANGE, &CMAEVADlg::OnCbnSelchangeComboDataRange)
-   ON_BN_CLICKED(IDC_BUTTON_SCAN,        &CMAEVADlg::OnBnClickedButtonScan)
-   ON_BN_CLICKED(IDC_BUTTON_START_ACQ,   &CMAEVADlg::OnBnClickedButtonStartAcq)
-   ON_BN_CLICKED(IDC_BUTTON_STOP_ACQ,    &CMAEVADlg::OnBnClickedButtonStopAcq)
-   ON_BN_CLICKED(IDC_BUTTON_EXPORT_DATA, &CMAEVADlg::OnBnClickedButtonExportData)
-   ON_BN_CLICKED(IDC_BUTTON_EVAL_DATA,   &CMAEVADlg::OnBnClickedButtonEvalData)
-   ON_BN_CLICKED(IDOK,                   &CMAEVADlg::OnBnClickedButtonExit)
+   ON_BN_CLICKED(IDC_BUTTON_SCAN,         &CMAEVADlg::OnBnClickedButtonScan)
+   ON_BN_CLICKED(IDC_BUTTON_IDLE_TEST,    &CMAEVADlg::OnBnClickedButtonIdleTest)
+   ON_BN_CLICKED(IDC_BUTTON_START_ACQ,    &CMAEVADlg::OnBnClickedButtonStartAcq)
+   ON_BN_CLICKED(IDC_BUTTON_STOP_ACQ,     &CMAEVADlg::OnBnClickedButtonStopAcq)
+   ON_BN_CLICKED(IDC_BUTTON_SAVE_DATA,    &CMAEVADlg::OnBnClickedButtonSaveData)
+   ON_BN_CLICKED(IDC_BUTTON_EVAL_DATA,    &CMAEVADlg::OnBnClickedButtonEvalData)
+   ON_BN_CLICKED(IDC_BUTTON_LEARN_DATA,   &CMAEVADlg::OnBnClickedButtonLearnData)
+   ON_BN_CLICKED(IDC_BUTTON_SHOW_RT_DATA, &CMAEVADlg::OnBnClickedButtonShowRtData)
+   ON_BN_CLICKED(IDOK,                    &CMAEVADlg::OnBnClickedButtonExit)
    ON_MESSAGE(WM_DATAACQ_IN_PROGRESS,  &CMAEVADlg::OnTimerMsgDataAcqInProgress)
    ON_MESSAGE(WM_DATAACQ_BUFFER_FULL,  &CMAEVADlg::OnTimerMsgDataAcqBufferFull)
    ON_MESSAGE(WM_DATAACQ_ACCESS_ERROR, &CMAEVADlg::OnTimerMsgDataAcqAccessError)
-   ON_BN_CLICKED(IDC_BUTTON_IDLE_TEST, &CMAEVADlg::OnBnClickedButtonIdleTest)
+   ON_CBN_SELCHANGE(IDC_COMBO_CAPTURE_LENGTH, &CMAEVADlg::OnCbnSelchangeComboCaptureLength)
 END_MESSAGE_MAP()
 
 // -----------------------------------------------------------------------------
@@ -872,6 +882,18 @@ BOOL CMAEVADlg::OnInitDialog()
    m_staticDataSize.SetWindowText(_T("  0"));
    m_staticOverrunNb.SetWindowText(_T("  0"));
 
+   m_cbCaptureLength.ResetContent();
+   m_cbCaptureLength.AddString(_T("Illimited"));
+   m_cbCaptureLength.AddString(_T("5 min."));
+   m_cbCaptureLength.AddString(_T("10 min."));
+   m_cbCaptureLength.AddString(_T("15 min."));
+   m_cbCaptureLength.AddString(_T("20 min."));
+   m_cbCaptureLength.AddString(_T("25 min."));
+   m_cbCaptureLength.AddString(_T("30 min."));
+   m_cbCaptureLength.AddString(_T("45 min."));
+   m_cbCaptureLength.AddString(_T("60 min."));
+   m_cbCaptureLength.SetCurSel(INIT_CAPTURE_LENGTH);
+
    m_cbDataRangeList.ResetContent();
    m_cbDataRangeList.AddString(_T("± 2G"));
    m_cbDataRangeList.AddString(_T("± 4G"));
@@ -981,6 +1003,32 @@ void CMAEVADlg::OnKillFocusEditRadius()
       v_strTemp.ReleaseBuffer(v_iLength);
 
       UpdateWindow();
+   }
+}
+
+// Method that updates the Data Capture Length Setting.
+void CMAEVADlg::OnCbnSelchangeComboCaptureLength()
+{
+   // Assign the selected item in the list to the new data capture length setting and
+   // update the new maximum time value for the data capture
+   if ((m_cbCaptureLength.GetCurSel() >= (T_CAPTURE_LENGTH)E_05_MINS) &&
+       (m_cbCaptureLength.GetCurSel() <= (T_CAPTURE_LENGTH)E_60_MINS)   )
+   {
+      m_eCaptureLength = (T_CAPTURE_LENGTH)m_cbCaptureLength.GetCurSel();
+
+      if (m_cbCaptureLength.GetCurSel() <= E_30_MINS)
+      {
+         m_uiMaxTime = m_cbCaptureLength.GetCurSel() * 5 * SEC_PER_MIN;
+      }
+      else
+      {
+         m_uiMaxTime = ((E_30_MINS * 5) + ((m_cbCaptureLength.GetCurSel() - E_30_MINS) * 15)) * SEC_PER_MIN;
+      }
+   }
+   else
+   {
+      m_eCaptureLength = E_INFINITE;
+      m_uiMaxTime = (LONGLONG)(-1);
    }
 }
 
@@ -1291,7 +1339,7 @@ void CMAEVADlg::OnBnClickedButtonIdleTest()
    m_buttonStartAcq.EnableWindow();
 }
 
-// Method called when the "Start New Data Acquisition" Button is pressed
+// Method called when the "Start Data Acquisition" Button is pressed
 void CMAEVADlg::OnBnClickedButtonStartAcq()
 {
    int  v_iMsgResult, v_iSPIResult;
@@ -1404,11 +1452,12 @@ void CMAEVADlg::OnBnClickedButtonStartAcq()
                      m_editRPM.EnableWindow(FALSE);
                      m_editRadius.EnableWindow(FALSE);
                      m_staticSpeed.EnableWindow(FALSE);
+                     m_cbCaptureLength.EnableWindow(FALSE);
                      m_cbDataRangeList.EnableWindow(FALSE);
                      m_buttonIdleTest.EnableWindow(FALSE);
                      m_buttonStartAcq.EnableWindow(FALSE);
                      m_buttonStopAcq.EnableWindow();
-                     m_buttonExportData.EnableWindow(FALSE);
+                     m_buttonSaveData.EnableWindow(FALSE);
 
                      UpdateWindow();
                   }
@@ -1476,6 +1525,7 @@ void CMAEVADlg::OnBnClickedButtonStartAcq()
    }
 }
 
+// Method called when the "Stop Data Acquisition" Button is pressed
 void CMAEVADlg::OnBnClickedButtonStopAcq()
 {
    int         v_iMsgResult;
@@ -1498,6 +1548,7 @@ void CMAEVADlg::OnBnClickedButtonStopAcq()
    m_editRPM.EnableWindow();
    m_editRadius.EnableWindow();
    m_staticSpeed.EnableWindow();
+   m_cbCaptureLength.EnableWindow();
    m_cbDataRangeList.EnableWindow();
    m_buttonIdleTest.EnableWindow();
    m_buttonStartAcq.EnableWindow();
@@ -1523,7 +1574,7 @@ void CMAEVADlg::OnBnClickedButtonStopAcq()
       // enable the data export if there was no error while acquiring data.
       if (WriteDataAcqBufferToFile(g_eActBuff, g_iBuffCurrIdx))
       {
-         m_buttonExportData.EnableWindow();
+         m_buttonSaveData.EnableWindow();
       }
       // Otherwise, indicate a problem with the data file
       else
@@ -1538,7 +1589,14 @@ void CMAEVADlg::OnBnClickedButtonStopAcq()
    UpdateWindow();
 }
 
-void CMAEVADlg::OnBnClickedButtonExportData()
+// Method called when the "Show Real-Time Capture" Button is pressed
+void CMAEVADlg::OnBnClickedButtonShowRtData()
+{
+   // TBD
+}
+
+// Method called when the "Save Acquired Data" Button is pressed
+void CMAEVADlg::OnBnClickedButtonSaveData()
 {
    int          v_iMsgResult;
    CFile        v_sSourceFile, v_sDestFile;
@@ -1630,11 +1688,19 @@ void CMAEVADlg::OnBnClickedButtonExportData()
    }
 }
 
+// Method called when the "Learn Data" Button is pressed
+void CMAEVADlg::OnBnClickedButtonLearnData()
+{
+   // TBD
+}
+
+// Method called when the "Evaluate Data" Button is pressed
 void CMAEVADlg::OnBnClickedButtonEvalData()
 {
    // TBD
 }
 
+// Method called when the "Exit" Button is pressed
 void CMAEVADlg::OnBnClickedButtonExit()
 {
    BOOL v_bSuccess;
@@ -1647,7 +1713,7 @@ void CMAEVADlg::OnBnClickedButtonExit()
    m_buttonIdleTest.EnableWindow(FALSE);
    m_buttonStartAcq.EnableWindow(FALSE);
    m_buttonStopAcq.EnableWindow(FALSE);
-   m_buttonExportData.EnableWindow(FALSE);
+   m_buttonSaveData.EnableWindow(FALSE);
    m_buttonEvalData.EnableWindow(FALSE);
 
    // Close the application window.
@@ -1675,6 +1741,12 @@ LRESULT CMAEVADlg::OnTimerMsgDataAcqInProgress(WPARAM wParam,LPARAM lParam)
    m_staticOverrunNb.SetWindowText(v_strTemp);
 
    UpdateWindow();
+
+   // Stop the acquisition process when the maximum time for the data capture has been reached.
+   if ((m_eCaptureLength != E_INFINITE) && (m_uiElapsedTime >= m_uiMaxTime))
+   {
+      OnBnClickedButtonStopAcq();
+   }
 
    return TRUE;
 }
