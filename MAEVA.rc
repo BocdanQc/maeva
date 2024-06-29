@@ -16,64 +16,63 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Anglais (États-Unis) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_MAEVA_DIALOG DIALOGEX 0, 0, 326, 236
+IDD_MAEVA_DIALOG DIALOGEX 0, 0, 343, 279
 STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "Micro-Asperities EVAluation robot controller   -   Version: 1.3"
+CAPTION "Micro-Asperities EVAluation robot controller   -   Version: 1.4"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Scan Devices",IDC_BUTTON_SCAN,21,15,50,14
-    LISTBOX         IDC_LIST_SUB20DEVICES,85,15,92,47,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Idle Test",IDC_BUTTON_IDLE_TEST,21,66,50,14,WS_DISABLED
-    EDITTEXT        IDC_EDIT_SURFACE_TYPE,85,125,92,12,ES_AUTOHSCROLL
-    COMBOBOX        IDC_COMBO_STYLUS,85,141,92,55,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    EDITTEXT        IDC_EDIT_RPM,85,157,43,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_RADIUS,85,173,43,12,ES_AUTOHSCROLL
-    COMBOBOX        IDC_COMBO_DATA_RANGE,276,141,43,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Start Data Acquisition",IDC_BUTTON_START_ACQ,199,15,98,14,WS_DISABLED | NOT WS_TABSTOP
-    PUSHBUTTON      "Stop Data Acquisition",IDC_BUTTON_STOP_ACQ,199,32,98,14,WS_DISABLED | NOT WS_TABSTOP
-    PUSHBUTTON      "Save Acquired Data",IDC_BUTTON_SAVE_DATA,199,66,98,14,WS_DISABLED | NOT WS_TABSTOP
-    PUSHBUTTON      "Evaluate Data/Surface",IDC_BUTTON_EVAL_DATA,199,100,98,14,NOT WS_VISIBLE | WS_DISABLED | NOT WS_TABSTOP
-    PUSHBUTTON      "Exit",IDOK,137,215,50,14,NOT WS_TABSTOP
-    LTEXT           "Surface to identify:",IDC_STATIC,7,125,74,8
-    LTEXT           "Data range setting:",IDC_STATIC,192,141,80,8
-    LTEXT           "Number of data entries:",IDC_STATIC,192,157,80,8
-    LTEXT           "Elapsed time (seconds):",IDC_STATIC,192,173,80,8
-    LTEXT           "Size",IDC_STATIC_DATA_SIZE,276,157,43,10,SS_SUNKEN
-    LTEXT           "Time",IDC_STATIC_ELAPSED_TIME,276,173,43,10,SS_SUNKEN
-    LTEXT           "Overrun number:",IDC_STATIC,192,189,80,8
-    LTEXT           "Overrun",IDC_STATIC_OVERRUN,276,189,43,10,SS_SUNKEN
-    LTEXT           "Stylus type:",IDC_STATIC,7,141,74,8
-    LTEXT           "Revolution per minute:",IDC_STATIC,7,157,74,8
-    LTEXT           "Radius (mm):",IDC_STATIC,7,173,74,8
-    LTEXT           "Radial speed (mm/s):",IDC_STATIC,7,189,74,8
-    CONTROL         "Speed",IDC_STATIC_SPEED,"Static",SS_LEFTNOWORDWRAP | SS_SUNKEN | WS_GROUP,85,189,43,12
-    CTEXT           "Devices List",IDC_STATIC,85,7,92,8
-    GROUPBOX        "Average Values",IDC_STATIC,85,62,92,59,BS_CENTER
-    CTEXT           "X",IDC_STATIC_X_AXIS,131,74,43,10,SS_SUNKEN
-    CTEXT           "Y",IDC_STATIC_Y_AXIS,131,89,43,10,SS_SUNKEN
-    CTEXT           "Z",IDC_STATIC_Z_AXIS,131,106,43,10,SS_SUNKEN
-    LTEXT           "X-Axis (mG):",IDC_STATIC,88,74,40,8
-    LTEXT           "Y-Axis (mG):",IDC_STATIC,88,89,40,8
-    LTEXT           "Z-Axis (mG):",IDC_STATIC,88,104,40,8
-    LTEXT           "Data capture length:",IDC_STATIC,192,125,80,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,184,125,2,77
-    PUSHBUTTON      "Learn Data/Surface",IDC_BUTTON_LEARN_DATA,199,83,98,14,NOT WS_VISIBLE | WS_DISABLED | NOT WS_TABSTOP
-    PUSHBUTTON      "Show Real-Time Capture",IDC_BUTTON_SHOW_RT_DATA,199,49,98,14,WS_DISABLED | NOT WS_TABSTOP
-    COMBOBOX        IDC_COMBO_CAPTURE_LENGTH,276,125,43,91,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "Scan Devices",IDC_BUTTON_SCAN,15,15,50,14
+    LISTBOX         IDC_LIST_SUB20DEVICES,72,15,92,47,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Idle Test",IDC_BUTTON_IDLE_TEST,15,66,50,14,WS_DISABLED
+    EDITTEXT        IDC_EDIT_SURFACE_TYPE,72,125,92,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_STYLUS,72,141,92,55,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_RPM,263,91,43,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_RADIUS,263,108,43,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_DATA_RANGE,263,183,43,58,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Start Data Acquisition",IDC_BUTTON_START_ACQ,40,166,98,14,WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Stop Data Acquisition",IDC_BUTTON_STOP_ACQ,40,183,98,14,WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Save Acquired Data",IDC_BUTTON_SAVE_DATA,40,217,98,14,WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Identify Current Surface",IDC_BUTTON_EVAL_DATA,40,234,98,14,NOT WS_VISIBLE | WS_DISABLED | NOT WS_TABSTOP
+    PUSHBUTTON      "Exit",IDOK,146,258,50,14,NOT WS_TABSTOP
+    LTEXT           "Surface to identify:",IDC_STATIC,7,125,62,8
+    LTEXT           "Data range setting:",IDC_STATIC,180,183,80,8
+    LTEXT           "Number of data entries:",IDC_STATIC,180,200,80,8
+    LTEXT           "Elapsed time (seconds):",IDC_STATIC,180,217,80,8
+    LTEXT           "Size",IDC_STATIC_DATA_SIZE,263,200,43,10,SS_SUNKEN
+    LTEXT           "Time",IDC_STATIC_ELAPSED_TIME,263,217,43,10,SS_SUNKEN
+    LTEXT           "Overrun number:",IDC_STATIC,180,234,80,8
+    LTEXT           "Overrun",IDC_STATIC_OVERRUN,263,234,43,10,SS_SUNKEN
+    LTEXT           "Stylus type:",IDC_STATIC,7,141,62,8
+    LTEXT           "Revolution per minute:",IDC_STATIC,180,91,80,8
+    LTEXT           "Radius (mm):",IDC_STATIC,180,108,80,8
+    LTEXT           "Radial speed (mm/s):",IDC_STATIC,180,125,80,8
+    CTEXT           "Devices List",IDC_STATIC,72,7,92,8
+    GROUPBOX        "Average Values",IDC_STATIC,72,62,92,59,BS_CENTER
+    CTEXT           "X",IDC_STATIC_X_AXIS,118,74,43,10,SS_SUNKEN
+    CTEXT           "Y",IDC_STATIC_Y_AXIS,118,89,43,10,SS_SUNKEN
+    CTEXT           "Z",IDC_STATIC_Z_AXIS,118,106,43,10,SS_SUNKEN
+    LTEXT           "X-Axis (mG):",IDC_STATIC,75,74,40,8
+    LTEXT           "Y-Axis (mG):",IDC_STATIC,75,89,40,8
+    LTEXT           "Z-Axis (mG):",IDC_STATIC,75,104,40,8
+    LTEXT           "Data capture length:",IDC_STATIC,180,166,80,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDFRAME,171,15,2,239
+    PUSHBUTTON      "Show Real-Time Capture",IDC_BUTTON_SHOW_RT_DATA,40,200,98,14,NOT WS_VISIBLE | WS_DISABLED | NOT WS_TABSTOP
+    COMBOBOX        IDC_COMBO_CAPTURE_LENGTH,263,166,43,91,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_VAR,263,73,73,55,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_SPEED,263,125,43,12,ES_AUTOHSCROLL
+    LTEXT           "Variable to compute:",IDC_STATIC,180,73,80,8
 END
 
 
@@ -83,8 +82,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,2,0,0
- PRODUCTVERSION 1,3,0,0
+ FILEVERSION 1,4,0,0
+ PRODUCTVERSION 1,4,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -101,12 +100,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Laval University - IFT and GLO Department"
             VALUE "FileDescription", "MAEVA: Data acquisition through USB-SPI from an accelerometer."
-            VALUE "FileVersion", "1.3"
+            VALUE "FileVersion", "1.4.0.0"
             VALUE "InternalName", "MAEVA.exe"
             VALUE "LegalCopyright", "(c) Laval University - Daniel Emond.  All rights reserved."
             VALUE "OriginalFilename", "MAEVA.exe"
             VALUE "ProductName", "Micro-Asperities EVAluation Robot Controller"
-            VALUE "ProductVersion", "1.3"
+            VALUE "ProductVersion", "1.4.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -122,30 +121,39 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_MAEVA_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 319
+        RIGHTMARGIN, 336
         TOPMARGIN, 7
-        BOTTOMMARGIN, 229
+        BOTTOMMARGIN, 272
     END
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Anglais (États-Unis) resources
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_MAEVA_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Français (Canada) resources
+// French (Canada) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRC)
-#ifdef _WIN32
 LANGUAGE LANG_FRENCH, SUBLANG_FRENCH_CANADIAN
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -194,7 +202,8 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\MAEVA.ico"
-#endif    // Français (Canada) resources
+
+#endif    // French (Canada) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

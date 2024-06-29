@@ -13,6 +13,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 // GLOBAL Definitions and Declarations
 ////////////////////////////////////////////////////////////////////////////////
+#define PI 3.1415926535897932384626433832795f
+#define SEC_PER_MIN 60
+
 // -----------------------------------------------------------------------------
 // Acquisition buffers definitions
 // -----------------------------------------------------------------------------
@@ -32,9 +35,19 @@ enum T_STYLUS_TYPE
    E_MAX_STYLUS_TYPE
 };
 
+enum T_COMPUTED_VAR
+{
+   E_RPM,
+   E_RADIUS,
+   E_SPEED,
+   E_MAX_COMPUTED_VAR
+};
+
 enum T_CAPTURE_LENGTH
 {
    E_INFINITE,
+   E_01_MIN,
+   E_02_MINS,
    E_05_MINS,
    E_10_MINS,
    E_15_MINS,
@@ -42,7 +55,8 @@ enum T_CAPTURE_LENGTH
    E_25_MINS,
    E_30_MINS,
    E_45_MINS,
-   E_60_MINS
+   E_60_MINS,
+   E_MAX_CAPTURE_TIME
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,10 +91,13 @@ public:
    BOOL       StopAccelerometer(sub_handle i_shHandle);
    BOOL       WriteDataAcqBufferToFile(T_CURR_ACQ_BUFF i_eBuff, int i_iDataCount);
    BOOL       StopAcquisition(void);
+   void       UpdateVariable(void);
 
    afx_msg void OnCbnSelchangeComboStylusType();
+   afx_msg void OnCbnSelchangeComboComputedVar();
    afx_msg void OnKillFocusEditRPM();
    afx_msg void OnKillFocusEditRadius();
+   afx_msg void OnKillFocusEditSpeed();
    afx_msg void OnCbnSelchangeComboCaptureLength();
    afx_msg void OnCbnSelchangeComboDataRange();
    afx_msg void OnBnClickedButtonScan();
@@ -89,7 +106,6 @@ public:
    afx_msg void OnBnClickedButtonStopAcq();
    afx_msg void OnBnClickedButtonShowRtData();
    afx_msg void OnBnClickedButtonSaveData();
-   afx_msg void OnBnClickedButtonLearnData();
    afx_msg void OnBnClickedButtonEvalData();
    afx_msg void OnBnClickedButtonExit();
 
@@ -106,10 +122,11 @@ public:
 private:
    CString          m_strSurfaceType;
    T_STYLUS_TYPE    m_eStylusType;
+   T_COMPUTED_VAR   m_eComputedVar;
    double           m_fRPM;
    double           m_fRadius;
    double           m_fSpeed;
-   T_CAPTURE_LENGTH m_eCaptureLength;
+   LONGLONG         m_uiCaptureTime;
    T_RANGE_G_SET    m_eDataRangeSetting;
    BOOL             m_bAccelStarted;
    BOOL             m_bFileAlreadyOpened;
@@ -117,7 +134,6 @@ private:
    CTime            m_timeAcqStart;
    CTime            m_timeAcqStop;
    LONGLONG         m_uiElapsedTime;
-   LONGLONG         m_uiMaxTime;
 
    CListBox   m_lbSUB20DevicesList;
    CStatic    m_staticXAxis;
@@ -125,9 +141,10 @@ private:
    CStatic    m_staticZAxis;
    CEdit      m_editSurfaceType;
    CComboBox  m_cbStylusType;
+   CComboBox  m_cbComputedVar;
    CEditFloat m_editRPM;
    CEditFloat m_editRadius;
-   CStatic    m_staticSpeed;
+   CEditFloat m_editSpeed;
    CComboBox  m_cbCaptureLength;
    CComboBox  m_cbDataRangeList;
    CStatic    m_staticDataSize;

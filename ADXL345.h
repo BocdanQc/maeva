@@ -171,10 +171,10 @@ union T_AXIS_CONV
    T_ACCEL_FIFO_ENTRY sAxisInChar;
    struct
    {
-      short iX;
-      short iY;
-      short iZ;
-   } sAxisInShortInt;
+      unsigned short uiX;
+      unsigned short uiY;
+      unsigned short uiZ;
+   } sAxisInUnsignedShort;
 };
 
 // Accelerometer ACT_INACT Control register data structure

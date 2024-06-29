@@ -16,15 +16,30 @@
 ////////////////////////////////////////////////////////////////////////////////
 // GLOBAL Definitions and Declarations
 ////////////////////////////////////////////////////////////////////////////////
-#define PI 3.1415926535897932384626433832795f
-#define SEC_PER_MIN 60
+#define INIT_STYLUS       E_STEEL
+#define INIT_COMP_VAR     E_SPEED
 
-#define INIT_STYLUS         E_STEEL
-#define INIT_RPM            45.0f
-#define INIT_RADIUS         125.0f 
-#define INIT_CAPTURE_LENGTH E_25_MINS
-   //Note: Possible values for INIT_CAPTURE_LENGTH are E_05_MINS to E_30_MINS
-#define INIT_RANGE          E_RANGE_PLUS_MINUS_4G
+#define INIT_RPM          45.0f
+#define INIT_RADIUS       125.0f 
+
+const LONGLONG CAPTURE_LENGHT[E_MAX_CAPTURE_TIME] =
+{
+   (LONGLONG)(-1),
+   SEC_PER_MIN,
+   ( 2 * SEC_PER_MIN),
+   ( 5 * SEC_PER_MIN),
+   (10 * SEC_PER_MIN),
+   (15 * SEC_PER_MIN),
+   (20 * SEC_PER_MIN),
+   (25 * SEC_PER_MIN),
+   (30 * SEC_PER_MIN),
+   (45 * SEC_PER_MIN),
+   (60 * SEC_PER_MIN)
+};
+
+#define INIT_CAPTURE_SEL  3
+
+#define INIT_RANGE        E_RANGE_PLUS_MINUS_4G
 
 #ifdef _LOW_RES_DATA
 #define DATA_MASK_2G  E_2G_LO_RES_DATA_MASK
@@ -222,20 +237,21 @@ CMAEVADlg::CMAEVADlg(CWnd* pParent /*=NULL*/)
    , m_hTimer(NULL)
    , m_bAcquiringData(FALSE)
    , m_eStylusType(INIT_STYLUS)
+   , m_eComputedVar(INIT_COMP_VAR)
    , m_fRPM(INIT_RPM)
    , m_fRadius(INIT_RADIUS)
-   , m_eCaptureLength(INIT_CAPTURE_LENGTH)
    , m_eDataRangeSetting(INIT_RANGE)
    , m_bAccelStarted(FALSE)
    , m_bFileAlreadyOpened(FALSE)
    , m_iFileOverrunEndPtr(0)
    , m_uiElapsedTime(0)
-   , m_uiMaxTime(INIT_CAPTURE_LENGTH * 5 * SEC_PER_MIN)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 
-   // Note: radial speed = 2 x PI x radius x RPM / 60s
-   m_fSpeed = 2 * PI * INIT_RPM * INIT_RADIUS / SEC_PER_MIN;
+    // Note: radial speed = 2 x PI x radius x RPM / 60s
+    m_fSpeed = (2 * PI * INIT_RPM * INIT_RADIUS) / SEC_PER_MIN;
+
+    m_uiCaptureTime = CAPTURE_LENGHT[INIT_CAPTURE_SEL];
 }
 
 // -----------------------------------------------------------------------------
@@ -250,9 +266,10 @@ void CMAEVADlg::DoDataExchange(CDataExchange* pDX)
    DDX_Control(pDX, IDC_STATIC_Z_AXIS, m_staticZAxis);
    DDX_Control(pDX, IDC_EDIT_SURFACE_TYPE, m_editSurfaceType);
    DDX_Control(pDX, IDC_COMBO_STYLUS, m_cbStylusType);
+   DDX_Control(pDX, IDC_COMBO_VAR, m_cbComputedVar);
    DDX_Control(pDX, IDC_EDIT_RPM, m_editRPM);
    DDX_Control(pDX, IDC_EDIT_RADIUS, m_editRadius);
-   DDX_Control(pDX, IDC_STATIC_SPEED, m_staticSpeed);
+   DDX_Control(pDX, IDC_EDIT_SPEED, m_editSpeed);
    DDX_Control(pDX, IDC_COMBO_CAPTURE_LENGTH, m_cbCaptureLength);
    DDX_Control(pDX, IDC_COMBO_DATA_RANGE, m_cbDataRangeList);
    DDX_Control(pDX, IDC_STATIC_DATA_SIZE, m_staticDataSize);
@@ -263,7 +280,6 @@ void CMAEVADlg::DoDataExchange(CDataExchange* pDX)
    DDX_Control(pDX, IDC_BUTTON_STOP_ACQ, m_buttonStopAcq);
    DDX_Control(pDX, IDC_BUTTON_SHOW_RT_DATA, m_buttonShowRTData);
    DDX_Control(pDX, IDC_BUTTON_SAVE_DATA, m_buttonSaveData);
-   DDX_Control(pDX, IDC_BUTTON_LEARN_DATA, m_buttonLearnData);
    DDX_Control(pDX, IDC_BUTTON_EVAL_DATA, m_buttonEvalData);
 }
 
@@ -275,22 +291,23 @@ BEGIN_MESSAGE_MAP(CMAEVADlg, CDialog)
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
    ON_CBN_SELCHANGE(IDC_COMBO_STYLUS,     &CMAEVADlg::OnCbnSelchangeComboStylusType)
+   ON_CBN_SELCHANGE(IDC_COMBO_VAR,        &CMAEVADlg::OnCbnSelchangeComboComputedVar)
    ON_EN_KILLFOCUS(IDC_EDIT_RPM,          &CMAEVADlg::OnKillFocusEditRPM)
    ON_EN_KILLFOCUS(IDC_EDIT_RADIUS,       &CMAEVADlg::OnKillFocusEditRadius)
+   ON_EN_KILLFOCUS(IDC_EDIT_SPEED,        &CMAEVADlg::OnKillFocusEditSpeed)
+   ON_CBN_SELCHANGE(IDC_COMBO_CAPTURE_LENGTH, &CMAEVADlg::OnCbnSelchangeComboCaptureLength)
    ON_CBN_SELCHANGE(IDC_COMBO_DATA_RANGE, &CMAEVADlg::OnCbnSelchangeComboDataRange)
    ON_BN_CLICKED(IDC_BUTTON_SCAN,         &CMAEVADlg::OnBnClickedButtonScan)
    ON_BN_CLICKED(IDC_BUTTON_IDLE_TEST,    &CMAEVADlg::OnBnClickedButtonIdleTest)
    ON_BN_CLICKED(IDC_BUTTON_START_ACQ,    &CMAEVADlg::OnBnClickedButtonStartAcq)
    ON_BN_CLICKED(IDC_BUTTON_STOP_ACQ,     &CMAEVADlg::OnBnClickedButtonStopAcq)
+   ON_BN_CLICKED(IDC_BUTTON_SHOW_RT_DATA, &CMAEVADlg::OnBnClickedButtonShowRtData)
    ON_BN_CLICKED(IDC_BUTTON_SAVE_DATA,    &CMAEVADlg::OnBnClickedButtonSaveData)
    ON_BN_CLICKED(IDC_BUTTON_EVAL_DATA,    &CMAEVADlg::OnBnClickedButtonEvalData)
-   ON_BN_CLICKED(IDC_BUTTON_LEARN_DATA,   &CMAEVADlg::OnBnClickedButtonLearnData)
-   ON_BN_CLICKED(IDC_BUTTON_SHOW_RT_DATA, &CMAEVADlg::OnBnClickedButtonShowRtData)
    ON_BN_CLICKED(IDOK,                    &CMAEVADlg::OnBnClickedButtonExit)
    ON_MESSAGE(WM_DATAACQ_IN_PROGRESS,  &CMAEVADlg::OnTimerMsgDataAcqInProgress)
    ON_MESSAGE(WM_DATAACQ_BUFFER_FULL,  &CMAEVADlg::OnTimerMsgDataAcqBufferFull)
    ON_MESSAGE(WM_DATAACQ_ACCESS_ERROR, &CMAEVADlg::OnTimerMsgDataAcqAccessError)
-   ON_CBN_SELCHANGE(IDC_COMBO_CAPTURE_LENGTH, &CMAEVADlg::OnCbnSelchangeComboCaptureLength)
 END_MESSAGE_MAP()
 
 // -----------------------------------------------------------------------------
@@ -647,42 +664,43 @@ BOOL CMAEVADlg::StopAccelerometer(sub_handle i_shHandle)
 // -----------------------------------------------------------------------------
 BOOL CMAEVADlg::WriteDataAcqBufferToFile(T_CURR_ACQ_BUFF i_eBuff, int i_iDataCount)
 {
-   BOOL        v_bSuccess = FALSE;
-   CFile       v_sAcqFile;
-   CTime       v_sLocalTime;
-   CString     v_strDisplay, v_strTemp;
-   char        v_acBufRead[256];
-   int         v_iDataCount = 0;
-   int         v_iOverrunPtr;
-   T_AXIS_CONV v_sAxisConv;
-   T_AXIS_DATA v_sAxisData;
-   int         v_iDataRangeValue;
-   int         v_iDataMask;
-   double      v_fConvFactor;
+   BOOL           v_bSuccess = FALSE;
+   CFile          v_sAcqFile;
+   CTime          v_sLocalTime;
+   CString        v_strDisplay, v_strTemp;
+   char           v_acBufRead[256];
+   int            v_iDataCount = 0;
+   int            v_iOverrunPtr;
+   T_AXIS_CONV    v_sAxisConv;
+   T_AXIS_DATA    v_sAxisData;
+   unsigned short v_uiDataMask;
+   int            v_iDataRangeValue;
+   double         v_fConvFactor;
 
+   // Obtain the corresponding data mask and conversion factor as per the data range.
    switch (m_eDataRangeSetting)
    {
    case E_RANGE_PLUS_MINUS_2G:
+      v_uiDataMask      = DATA_MASK_2G;
       v_iDataRangeValue = E_2G_VAL;
-      v_iDataMask = DATA_MASK_2G;
       break;
    case E_RANGE_PLUS_MINUS_4G:
+      v_uiDataMask      = DATA_MASK_4G;
       v_iDataRangeValue = E_4G_VAL;
-      v_iDataMask = DATA_MASK_4G;
       break;
    case E_RANGE_PLUS_MINUS_8G:
+      v_uiDataMask      = DATA_MASK_8G;
       v_iDataRangeValue = E_8G_VAL;
-      v_iDataMask = DATA_MASK_8G;
       break;
    case E_RANGE_PLUS_MINUS_16G:
+      v_uiDataMask      = DATA_MASK_16G;
       v_iDataRangeValue = E_16G_VAL;
-      v_iDataMask = DATA_MASK_16G;
       break;
    default:
-      v_iDataRangeValue = 0x0000;
-      v_iDataMask = 0xFFFF;
-      break;
+      v_uiDataMask      = 0x0000;
+      v_iDataRangeValue = NULL;
    }
+   v_fConvFactor = (float)v_iDataRangeValue / (v_uiDataMask + 1);
 
    // If not already done, create acquisiton file.
    if (!m_bFileAlreadyOpened)
@@ -708,7 +726,7 @@ BOOL CMAEVADlg::WriteDataAcqBufferToFile(T_CURR_ACQ_BUFF i_eBuff, int i_iDataCou
          m_cbStylusType.GetWindowText(v_strDisplay);
          v_strTemp.AppendFormat(_T("Stylus: %s\r\n"),v_strDisplay);
          // Speed
-         m_staticSpeed.GetWindowText(v_strDisplay);
+         m_editSpeed.GetWindowText(v_strDisplay);
          v_strTemp.AppendFormat(_T("Speed: %s mm\\sec\r\n"),v_strDisplay.Trim());
          // Data rate
          v_strTemp.AppendFormat(_T("Data rate: %d Hz\r\n"),OUTPUT_DATA_RATE_VALUE);
@@ -751,15 +769,30 @@ BOOL CMAEVADlg::WriteDataAcqBufferToFile(T_CURR_ACQ_BUFF i_eBuff, int i_iDataCou
          v_sAxisConv.sAxisInChar.acZ[0] = g_asAcqBuff[i_eBuff][v_iCount].sData.acZ[0];
          v_sAxisConv.sAxisInChar.acZ[1] = g_asAcqBuff[i_eBuff][v_iCount].sData.acZ[1];
 
-         v_sAxisData.fAxisX = v_sAxisConv.sAxisInShortInt.iX;
-         v_sAxisData.fAxisY = v_sAxisConv.sAxisInShortInt.iY;
-         v_sAxisData.fAxisZ = v_sAxisConv.sAxisInShortInt.iZ;
-
-         v_fConvFactor = v_iDataRangeValue / (v_iDataMask + 1);
-
-         v_sAxisData.fAxisX *= v_fConvFactor;
-         v_sAxisData.fAxisY *= v_fConvFactor;
-         v_sAxisData.fAxisZ *= v_fConvFactor;
+         if ((v_sAxisConv.sAxisInUnsignedShort.uiX & (v_uiDataMask + 1)) == NULL)
+         {
+            v_sAxisData.fAxisX = (v_sAxisConv.sAxisInUnsignedShort.uiX & v_uiDataMask) * v_fConvFactor;
+         }
+         else
+         {
+            v_sAxisData.fAxisX = (~(v_sAxisConv.sAxisInUnsignedShort.uiX - 1) & v_uiDataMask) * -v_fConvFactor;
+         }
+         if ((v_sAxisConv.sAxisInUnsignedShort.uiY & (v_uiDataMask + 1)) == NULL)
+         {
+            v_sAxisData.fAxisY = (v_sAxisConv.sAxisInUnsignedShort.uiY & v_uiDataMask) * v_fConvFactor;
+         }
+         else
+         {
+            v_sAxisData.fAxisY = (~(v_sAxisConv.sAxisInUnsignedShort.uiY - 1) & v_uiDataMask) * -v_fConvFactor;
+         }
+         if ((v_sAxisConv.sAxisInUnsignedShort.uiZ & (v_uiDataMask + 1)) == NULL)
+         {
+            v_sAxisData.fAxisZ = (v_sAxisConv.sAxisInUnsignedShort.uiZ & v_uiDataMask) * v_fConvFactor;
+         }
+         else
+         {
+            v_sAxisData.fAxisZ = (~(v_sAxisConv.sAxisInUnsignedShort.uiZ - 1) & v_uiDataMask) * -v_fConvFactor;
+         }
 
          // Write the data into the file
          v_strTemp.Format(
@@ -870,13 +903,22 @@ BOOL CMAEVADlg::OnInitDialog()
    m_cbStylusType.AddString(_T("Wood - Pine"));
    m_cbStylusType.SetCurSel(INIT_STYLUS);
 
+   m_cbComputedVar.ResetContent();
+   m_cbComputedVar.AddString(_T("Rev. per min."));
+   m_cbComputedVar.AddString(_T("Radius"));
+   m_cbComputedVar.AddString(_T("Radial Speed"));
+   m_cbComputedVar.SetCurSel(INIT_COMP_VAR);
+
    v_strTemp.Format(_T("%.1f"), m_fRPM);
    m_editRPM.SetWindowText(v_strTemp);
    v_strTemp.Format(_T("%.1f"), m_fRadius);
    m_editRadius.SetWindowText(v_strTemp);
+   v_strTemp.Format(_T("%.1f"), m_fSpeed);
+   m_editSpeed.SetWindowText(v_strTemp);
 
-   v_strTemp.Format(_T("  %.1f"), m_fSpeed);
-   m_staticSpeed.SetWindowText(v_strTemp);
+   m_editRPM.EnableWindow(m_eComputedVar != E_RPM);
+   m_editRadius.EnableWindow(m_eComputedVar != E_RADIUS);
+   m_editSpeed.EnableWindow(m_eComputedVar != E_SPEED);
 
    m_staticElapsedTime.SetWindowText(_T("  0"));
    m_staticDataSize.SetWindowText(_T("  0"));
@@ -884,6 +926,8 @@ BOOL CMAEVADlg::OnInitDialog()
 
    m_cbCaptureLength.ResetContent();
    m_cbCaptureLength.AddString(_T("Illimited"));
+   m_cbCaptureLength.AddString(_T("1 min."));
+   m_cbCaptureLength.AddString(_T("2 min."));
    m_cbCaptureLength.AddString(_T("5 min."));
    m_cbCaptureLength.AddString(_T("10 min."));
    m_cbCaptureLength.AddString(_T("15 min."));
@@ -892,7 +936,7 @@ BOOL CMAEVADlg::OnInitDialog()
    m_cbCaptureLength.AddString(_T("30 min."));
    m_cbCaptureLength.AddString(_T("45 min."));
    m_cbCaptureLength.AddString(_T("60 min."));
-   m_cbCaptureLength.SetCurSel(INIT_CAPTURE_LENGTH);
+   m_cbCaptureLength.SetCurSel(INIT_CAPTURE_SEL);
 
    m_cbDataRangeList.ResetContent();
    m_cbDataRangeList.AddString(_T("± 2G"));
@@ -954,6 +998,26 @@ void CMAEVADlg::OnCbnSelchangeComboStylusType()
    }
 }
 
+// Method that selects the variable to compute the radial speed equation.
+void CMAEVADlg::OnCbnSelchangeComboComputedVar()
+{
+   // Assign the selected item in the list to the new selected variable.
+   if ((m_cbComputedVar.GetCurSel() >= E_RPM)  &&
+       (m_cbComputedVar.GetCurSel() <= E_SPEED)  )
+   {
+      m_eComputedVar = (T_COMPUTED_VAR)m_cbComputedVar.GetCurSel();
+   }
+   else
+   {
+      m_eComputedVar = E_SPEED;
+   }
+
+   //LLR> Prevent the corresponding edit window from being modified.
+   m_editRPM.EnableWindow(m_eComputedVar != E_RPM);
+   m_editRadius.EnableWindow(m_eComputedVar != E_RADIUS);
+   m_editSpeed.EnableWindow(m_eComputedVar != E_SPEED);
+}
+
 // Method that updates the radial speed based upon the new RPM value.
 void CMAEVADlg::OnKillFocusEditRPM()
 {
@@ -969,12 +1033,9 @@ void CMAEVADlg::OnKillFocusEditRPM()
       m_fRPM = strtod(v_strTemp, &v_pEndPtr);
       v_strTemp.Format(_T("%.1f"), m_fRPM);
       m_editRPM.SetWindowText(v_strTemp);
-
-      m_fSpeed = 2 * PI * m_fRadius * m_fRPM / 60.0f;
-      v_strTemp.Format(_T("  %.1f"), m_fSpeed);
-      m_staticSpeed.SetWindowText(v_strTemp);
-
       v_strTemp.ReleaseBuffer(v_iLength);
+
+      UpdateVariable();
 
       UpdateWindow();
    }
@@ -995,14 +1056,59 @@ void CMAEVADlg::OnKillFocusEditRadius()
       m_fRadius = strtod(v_strTemp, &v_pEndPtr);
       v_strTemp.Format(_T("%.1f"), m_fRadius);
       m_editRadius.SetWindowText(v_strTemp);
-
-      m_fSpeed = 2 * PI * m_fRadius * m_fRPM / 60.0f;
-      v_strTemp.Format(_T("  %.1f"), m_fSpeed);
-      m_staticSpeed.SetWindowText(v_strTemp);
-
       v_strTemp.ReleaseBuffer(v_iLength);
 
+      UpdateVariable();
+
       UpdateWindow();
+   }
+}
+
+void CMAEVADlg::OnKillFocusEditSpeed()
+{
+   int     v_iLength;
+   CString v_strTemp;
+   LPTSTR  v_pEndPtr;
+
+   // If the Radius value was modified, update the value of the radial speed.
+   if (m_editSpeed.GetModify())
+   {
+      v_iLength = m_editSpeed.LineLength(m_editRadius.LineIndex(0));
+      m_editSpeed.GetLine(0, v_strTemp.GetBuffer(v_iLength), v_iLength);
+      m_fSpeed = strtod(v_strTemp, &v_pEndPtr);
+      v_strTemp.Format(_T("%.1f"), m_fSpeed);
+      m_editSpeed.SetWindowText(v_strTemp);
+      v_strTemp.ReleaseBuffer(v_iLength);
+
+      UpdateVariable();
+
+      UpdateWindow();
+   }
+}
+
+// Method that updates the selected computed variable.
+void CMAEVADlg::UpdateVariable(void)
+{
+   CString v_strTemp;
+
+   // Compute the selected variable and update the edit window.
+   switch(m_eComputedVar)
+   {
+   case E_RPM:
+      m_fRPM = (m_fSpeed * 60.0f) / (2 * PI * m_fRadius);
+      v_strTemp.Format(_T("%.1f"), m_fRPM);
+      m_editRPM.SetWindowText(v_strTemp);
+      break;
+   case E_RADIUS:
+      m_fRadius = (m_fSpeed * 60.0f) / (2 * PI * m_fRPM);
+      v_strTemp.Format(_T("%.1f"), m_fRadius);
+      m_editRadius.SetWindowText(v_strTemp);
+      break;
+   case E_SPEED:
+   default:
+      m_fSpeed = (2 * PI * m_fRadius * m_fRPM) / 60.0f;
+      v_strTemp.Format(_T("%.1f"), m_fSpeed);
+      m_editSpeed.SetWindowText(v_strTemp);
    }
 }
 
@@ -1011,24 +1117,16 @@ void CMAEVADlg::OnCbnSelchangeComboCaptureLength()
 {
    // Assign the selected item in the list to the new data capture length setting and
    // update the new maximum time value for the data capture
-   if ((m_cbCaptureLength.GetCurSel() >= (T_CAPTURE_LENGTH)E_05_MINS) &&
-       (m_cbCaptureLength.GetCurSel() <= (T_CAPTURE_LENGTH)E_60_MINS)   )
-   {
-      m_eCaptureLength = (T_CAPTURE_LENGTH)m_cbCaptureLength.GetCurSel();
 
-      if (m_cbCaptureLength.GetCurSel() <= E_30_MINS)
-      {
-         m_uiMaxTime = m_cbCaptureLength.GetCurSel() * 5 * SEC_PER_MIN;
-      }
-      else
-      {
-         m_uiMaxTime = ((E_30_MINS * 5) + ((m_cbCaptureLength.GetCurSel() - E_30_MINS) * 15)) * SEC_PER_MIN;
-      }
+   if ((m_cbCaptureLength.GetCurSel() >= E_INFINITE        ) &&
+       (m_cbCaptureLength.GetCurSel() <  E_MAX_CAPTURE_TIME)   )
+   {
+      m_uiCaptureTime = CAPTURE_LENGHT[m_cbCaptureLength.GetCurSel()];
    }
    else
    {
-      m_eCaptureLength = E_INFINITE;
-      m_uiMaxTime = (LONGLONG)(-1);
+      m_cbCaptureLength.SetCurSel(INIT_CAPTURE_SEL);
+      m_uiCaptureTime = CAPTURE_LENGHT[INIT_CAPTURE_SEL];
    }
 }
 
@@ -1092,14 +1190,14 @@ void CMAEVADlg::OnBnClickedButtonIdleTest()
    T_ACCEL_XFER_INFO v_sAccelInfo;
    T_ACCEL_DATA      v_sAccelData;
 
-   LONGLONG    v_uiDataSize = 0;
-   T_AXIS_CONV v_sAxisConv;
-   T_AXIS_DATA v_sAxisData;
-   double      v_fConvFactor = 0.0f;
-
-   double v_fAvgValueAxisX = 0.0f;
-   double v_fAvgValueAxisY = 0.0f;
-   double v_fAvgValueAxisZ = 0.0f;
+   LONGLONG       v_uiDataSize = 0;
+   T_AXIS_CONV    v_sAxisConv;
+   T_AXIS_DATA    v_sAxisData;
+   unsigned short v_uiDataMask;
+   double         v_fConvFactor = 0.0f;
+   double         v_fAvgValueAxisX = 0.0f;
+   double         v_fAvgValueAxisY = 0.0f;
+   double         v_fAvgValueAxisZ = 0.0f;
 
    CString v_strTemp;
 
@@ -1159,9 +1257,34 @@ void CMAEVADlg::OnBnClickedButtonIdleTest()
             // Start the accelerometer
             if(StartAccelerometer(v_shHandle))
             {
+               // Obtain the corresponding data mask and conversion factor as per the data range.
+               switch (m_eDataRangeSetting)
+               {
+               case E_RANGE_PLUS_MINUS_2G:
+                  v_uiDataMask = DATA_MASK_2G;
+                  v_fConvFactor = (float)E_2G_VAL / (v_uiDataMask + 1);
+                  break;
+               case E_RANGE_PLUS_MINUS_4G:
+                  v_uiDataMask = DATA_MASK_4G;
+                  v_fConvFactor = (float)E_4G_VAL / (v_uiDataMask + 1);
+                  break;
+               case E_RANGE_PLUS_MINUS_8G:
+                  v_uiDataMask = DATA_MASK_8G;
+                  v_fConvFactor = (float)E_8G_VAL / (v_uiDataMask + 1);
+                  break;
+               case E_RANGE_PLUS_MINUS_16G:
+                  v_uiDataMask = DATA_MASK_16G;
+                  v_fConvFactor = (float)E_16G_VAL / (v_uiDataMask + 1);
+                  break;
+               default:
+                  v_uiDataMask = 0xFFFF;
+                  v_fConvFactor = 0.0f;
+               }
+
                // Proceed with acquiring test data only if the accelerometer was started correctly.
                do
                {
+
                   // Read the FIFO Status register.
                   v_sAccelInfo.sInfo.bRead          = TRUE;
                   v_sAccelInfo.sInfo.bMultipleBytes = FALSE;
@@ -1212,32 +1335,30 @@ void CMAEVADlg::OnBnClickedButtonIdleTest()
                         v_sAxisConv.sAxisInChar.acZ[0] = v_acSPIBuffIn[5];
                         v_sAxisConv.sAxisInChar.acZ[1] = v_acSPIBuffIn[6];
 
-                        v_sAxisData.fAxisX = v_sAxisConv.sAxisInShortInt.iX;
-                        v_sAxisData.fAxisY = v_sAxisConv.sAxisInShortInt.iY;
-                        v_sAxisData.fAxisZ = v_sAxisConv.sAxisInShortInt.iZ;
-
-                        switch (m_eDataRangeSetting)
+                        if ((v_sAxisConv.sAxisInUnsignedShort.uiX & (v_uiDataMask + 1)) == NULL)
                         {
-                        case E_RANGE_PLUS_MINUS_2G:
-                           v_fConvFactor = E_2G_VAL  / (DATA_MASK_2G + 1);
-                           break;
-                        case E_RANGE_PLUS_MINUS_4G:
-                           v_fConvFactor = E_4G_VAL  / (DATA_MASK_4G + 1);
-                           break;
-                        case E_RANGE_PLUS_MINUS_8G:
-                           v_fConvFactor = E_8G_VAL  / (DATA_MASK_8G + 1);
-                           break;
-                        case E_RANGE_PLUS_MINUS_16G:
-                           v_fConvFactor = E_16G_VAL / (DATA_MASK_16G + 1);
-                           break;
-                        default:
-                           v_fConvFactor = 0.0f;
-                           break;
+                           v_sAxisData.fAxisX = (v_sAxisConv.sAxisInUnsignedShort.uiX & v_uiDataMask) * v_fConvFactor;
                         }
-
-                        v_sAxisData.fAxisX *= v_fConvFactor;
-                        v_sAxisData.fAxisY *= v_fConvFactor;
-                        v_sAxisData.fAxisZ *= v_fConvFactor;
+                        else
+                        {
+                           v_sAxisData.fAxisX = (~(v_sAxisConv.sAxisInUnsignedShort.uiX - 1) & v_uiDataMask) * -v_fConvFactor;
+                        }
+                        if ((v_sAxisConv.sAxisInUnsignedShort.uiY & (v_uiDataMask + 1)) == NULL)
+                        {
+                           v_sAxisData.fAxisY = (v_sAxisConv.sAxisInUnsignedShort.uiY & v_uiDataMask) * v_fConvFactor;
+                        }
+                        else
+                        {
+                           v_sAxisData.fAxisY = (~(v_sAxisConv.sAxisInUnsignedShort.uiY - 1) & v_uiDataMask) * -v_fConvFactor;
+                        }
+                        if ((v_sAxisConv.sAxisInUnsignedShort.uiZ & (v_uiDataMask + 1)) == NULL)
+                        {
+                           v_sAxisData.fAxisZ = (v_sAxisConv.sAxisInUnsignedShort.uiZ & v_uiDataMask) * v_fConvFactor;
+                        }
+                        else
+                        {
+                           v_sAxisData.fAxisZ = (~(v_sAxisConv.sAxisInUnsignedShort.uiZ - 1) & v_uiDataMask) * -v_fConvFactor;
+                        }
 
                         // Compute the average value for all 3 axis once there are at least 2 data entries.
                         if (v_uiDataSize >= 2)
@@ -1451,7 +1572,7 @@ void CMAEVADlg::OnBnClickedButtonStartAcq()
                      m_cbStylusType.EnableWindow(FALSE);
                      m_editRPM.EnableWindow(FALSE);
                      m_editRadius.EnableWindow(FALSE);
-                     m_staticSpeed.EnableWindow(FALSE);
+                     m_editSpeed.EnableWindow(FALSE);
                      m_cbCaptureLength.EnableWindow(FALSE);
                      m_cbDataRangeList.EnableWindow(FALSE);
                      m_buttonIdleTest.EnableWindow(FALSE);
@@ -1547,7 +1668,7 @@ void CMAEVADlg::OnBnClickedButtonStopAcq()
    m_cbStylusType.EnableWindow();
    m_editRPM.EnableWindow();
    m_editRadius.EnableWindow();
-   m_staticSpeed.EnableWindow();
+   m_editSpeed.EnableWindow();
    m_cbCaptureLength.EnableWindow();
    m_cbDataRangeList.EnableWindow();
    m_buttonIdleTest.EnableWindow();
@@ -1592,7 +1713,7 @@ void CMAEVADlg::OnBnClickedButtonStopAcq()
 // Method called when the "Show Real-Time Capture" Button is pressed
 void CMAEVADlg::OnBnClickedButtonShowRtData()
 {
-   // TBD
+   // TODO : ajoutez ici le code de votre gestionnaire de notification de contrôle
 }
 
 // Method called when the "Save Acquired Data" Button is pressed
@@ -1688,16 +1809,10 @@ void CMAEVADlg::OnBnClickedButtonSaveData()
    }
 }
 
-// Method called when the "Learn Data" Button is pressed
-void CMAEVADlg::OnBnClickedButtonLearnData()
-{
-   // TBD
-}
-
-// Method called when the "Evaluate Data" Button is pressed
+// Method called when the "Identify Surface" Button is pressed
 void CMAEVADlg::OnBnClickedButtonEvalData()
 {
-   // TBD
+   // TODO : ajoutez ici le code de votre gestionnaire de notification de contrôle
 }
 
 // Method called when the "Exit" Button is pressed
@@ -1743,7 +1858,7 @@ LRESULT CMAEVADlg::OnTimerMsgDataAcqInProgress(WPARAM wParam,LPARAM lParam)
    UpdateWindow();
 
    // Stop the acquisition process when the maximum time for the data capture has been reached.
-   if ((m_eCaptureLength != E_INFINITE) && (m_uiElapsedTime >= m_uiMaxTime))
+   if ((m_cbCaptureLength.GetCurSel() != E_INFINITE) && (m_uiElapsedTime >= m_uiCaptureTime))
    {
       OnBnClickedButtonStopAcq();
    }
@@ -1827,3 +1942,4 @@ LRESULT CMAEVADlg::OnTimerMsgDataAcqAccessError(WPARAM wParam,LPARAM lParam)
 
    return TRUE;
 }
+
